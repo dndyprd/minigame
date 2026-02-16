@@ -60,21 +60,26 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* Placeholder for future games */}
-          <div className="group relative block p-1 opacity-50 cursor-not-allowed">
-            <div className="relative bg-black/40 border border-white/5 rounded-2xl p-8 flex items-center gap-8">
+          {/* Hand Rhythm Card */}
+          <Link href="/hand-rhythm" className="group relative block p-1">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl blur opacity-25 group-hover:opacity-75 transition duration-500"></div>
+            <div className="relative bg-black/80 border border-white/10 rounded-2xl p-8 hover:bg-black/60 transition-colors duration-300 flex items-center gap-8 overflow-hidden">
+              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-purple-500/10 to-transparent"></div>
+
               <div className="flex-1 text-left">
-                <h2 className="text-3xl font-bold text-gray-600 mb-2">
-                  COMING SOON
+                <h2 className="text-3xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">
+                  HAND RHYTHM
                 </h2>
-                <p className="text-gray-600">
-                  New simulations under development...
+                <p className="text-gray-400">
+                  Beat detection rhythm game. Hit circles in sync with the
+                  music!
                 </p>
               </div>
-              <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center border border-gray-700">
+
+              <div className="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center border border-purple-500/50 group-hover:scale-110 transition-transform duration-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-gray-600"
+                  className="h-8 w-8 text-purple-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -83,12 +88,12 @@ export default function Home() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
                   />
                 </svg>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
 
