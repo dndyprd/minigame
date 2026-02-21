@@ -72,7 +72,7 @@ const GameStartMenu: React.FC<GameStartMenuProps> = ({
 
                         <div className="relative bg-black/40 backdrop-blur-md border border-gray-800 rounded-2xl p-12 text-center overflow-hidden">
 
-                            <h1 className="text-6xl md:text-7xl font-black mb-4 transition-colors text-white tracking-tighter uppercase">
+                            <h1 className="text-6xl md:text-7xl font-bold mb-4 transition-colors text-white tracking-tighter uppercase">
                                 {title}
                             </h1>
 

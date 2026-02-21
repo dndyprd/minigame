@@ -161,6 +161,16 @@ const HandRhythmGame: React.FC = () => {
     }
   };
 
+  // Reset audio
+  const resetAudio = () => {
+    setAudioFile(null);
+    setBpm(0);
+    hitCirclesRef.current = [];
+    if (audioRef.current) {
+      audioRef.current.src = "";
+    }
+  };
+
   // Start game
   const startGame = () => {
     if (hitCirclesRef.current.length === 0) {
@@ -633,11 +643,25 @@ const HandRhythmGame: React.FC = () => {
               </>
             }
             footer={audioFile && bpm > 0 && (
-              <div className="mt-4 px-6 py-3 bg-green-900/30 border border-green-500/50 rounded-lg">
-                <p className="text-green-400 font-mono text-sm">
-                  ✓ Audio analyzed: {bpm} BPM •{" "}
-                  {hitCirclesRef.current.length} beats detected
-                </p>
+              <div className="mt-4 flex flex-col gap-2">
+                <div className="px-6 py-3 bg-green-900/30 border border-green-500/50 rounded-lg flex items-center justify-between">
+                  <p className="text-green-400 font-mono text-sm">
+                    ✓ Audio analyzed: {bpm} BPM • {hitCirclesRef.current.length} beats
+                  </p>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      resetAudio();
+                    }}
+                    className="ml-4 p-1.5 hover:bg-purple-500/20 rounded-lg transition-all text-purple-400 cursor-pointer group/reset"
+                    title="Change music"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover/reset:rotate-[-45deg] transition-transform">
+                      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                      <path d="M3 3v5h5"></path>
+                    </svg>
+                  </button>
+                </div>
               </div>
             )}
           />
@@ -681,57 +705,65 @@ const HandRhythmGame: React.FC = () => {
 
         {/* Results Screen */}
         {gameState === "results" && (
-          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md">
-            <div className="p-10 border-2 border-cyan-500/50 bg-black/60 rounded-3xl text-center shadow-[0_0_50px_rgba(6,182,212,0.4)] relative overflow-hidden group max-w-2xl">
-              <div className="absolute inset-0 bg-cyan-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              <h1 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-cyan-500 to-blue-900 mb-6 drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] tracking-tighter relative z-10">
-                {grade}
-              </h1>
-              <div className="space-y-4 text-2xl text-gray-300 mb-10 relative z-10">
-                <p>
-                  Score: <span className="text-white font-bold">{score}</span>
-                </p>
-                <p>
-                  Accuracy:{" "}
-                  <span className="text-cyan-400 font-bold">{accuracy}%</span>
-                </p>
-                <p>
-                  Max Combo:{" "}
-                  <span className="text-yellow-400 font-bold">{maxCombo}x</span>
-                </p>
-                <div className="grid grid-cols-4 gap-4 mt-6 text-lg">
-                  <div className="p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
-                    <div className="text-yellow-400 font-bold">
-                      {perfectHitsRef.current}
+          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center p-4">
+            <div className="relative w-full max-w-2xl">
+              <div className="group relative">
+                {/* Subtle Outer Glow */}
+                <div className="absolute -inset-1 bg-linear-to-r from-purple-500 to-indigo-800 rounded-2xl opacity-10 transition duration-1000"></div>
+
+                <div className="relative bg-black/40 backdrop-blur-md border border-gray-800 rounded-2xl p-12 text-center overflow-hidden">
+                  <h2 className="text-gray-500 text-sm font-mono uppercase tracking-[0.2em] mb-4">
+                    Performance Report
+                  </h2>
+
+                  <h1 className="text-9xl font-black text-transparent bg-clip-text bg-linear-to-b from-white to-gray-300 mb-8 drop-shadow-2xl tracking-tighter">
+                    {grade}
+                  </h1>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-4 text-left bg-white/5 border border-white/5 rounded-xl p-8">
+                    <div>
+                      <p className="text-gray-500 text-xs font-mono uppercase tracking-wider mb-1">Final Score</p>
+                      <p className="text-3xl font-bold text-white">{score.toLocaleString()}</p>
                     </div>
-                    <div className="text-xs text-gray-400">PERFECT</div>
-                  </div>
-                  <div className="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded-lg">
-                    <div className="text-cyan-400 font-bold">
-                      {goodHitsRef.current}
+                    <div>
+                      <p className="text-gray-500 text-xs font-mono uppercase tracking-wider mb-1">Accuracy</p>
+                      <p className="text-3xl font-bold text-purple-400">{accuracy}%</p>
                     </div>
-                    <div className="text-xs text-gray-400">GOOD</div>
-                  </div>
-                  <div className="p-3 bg-gray-900/20 border border-gray-500/30 rounded-lg">
-                    <div className="text-gray-400 font-bold">
-                      {badHitsRef.current}
+                    <div>
+                      <p className="text-gray-500 text-xs font-mono uppercase tracking-wider mb-1">Max Combo</p>
+                      <p className="text-3xl font-bold text-yellow-500">{maxCombo}x</p>
                     </div>
-                    <div className="text-xs text-gray-400">BAD</div>
                   </div>
-                  <div className="p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
-                    <div className="text-red-400 font-bold">
-                      {missCountRef.current}
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+                    <div className="p-4 bg-black/40 border border-white/5 rounded-xl">
+                      <p className="text-yellow-500 font-bold text-xl mb-1">{perfectHitsRef.current}</p>
+                      <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Perfect</p>
                     </div>
-                    <div className="text-xs text-gray-400">MISS</div>
+                    <div className="p-4 bg-black/40 border border-white/5 rounded-xl">
+                      <p className="text-purple-400 font-bold text-xl mb-1">{goodHitsRef.current}</p>
+                      <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Good</p>
+                    </div>
+                    <div className="p-4 bg-black/40 border border-white/5 rounded-xl">
+                      <p className="text-gray-400 font-bold text-xl mb-1">{badHitsRef.current}</p>
+                      <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Bad</p>
+                    </div>
+                    <div className="p-4 bg-black/40 border border-white/5 rounded-xl">
+                      <p className="text-red-500 font-bold text-xl mb-1">{missCountRef.current}</p>
+                      <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Miss</p>
+                    </div>
                   </div>
+
+                  <button
+                    onClick={() => setGameState("menu")}
+                    className="group relative inline-flex items-center justify-center px-12 py-5 overflow-hidden font-bold text-white rounded-xl bg-linear-to-r from-purple-500 to-indigo-800 transition-all duration-300 hover:scale-101 w-full cursor-pointer shadow-xl shadow-purple-900/20"
+                  >
+                    <span className="relative text-2xl tracking-[0.2em] uppercase">
+                      Back to Menu
+                    </span>
+                  </button>
                 </div>
               </div>
-              <button
-                onClick={() => setGameState("menu")}
-                className="relative z-10 px-12 py-4 bg-gradient-to-r from-cyan-600 to-blue-800 hover:from-cyan-500 hover:to-blue-700 text-white font-bold rounded-xl text-2xl transition-all shadow-[0_0_20px_rgba(8,145,178,0.5)] hover:shadow-[0_0_40px_rgba(6,182,212,0.8)] hover:-translate-y-1 active:scale-95 border border-cyan-400/30"
-              >
-                BACK TO MENU
-              </button>
             </div>
           </div>
         )}

@@ -2,6 +2,14 @@
 
 Website game interaktif berbasis **Hand Tracking** (deteksi pergerakan tangan) menggunakan MediaPipe dan Next.js. Kamu bisa bermain game hanya dengan menggerakkan tangan di depan kamera!
 
+![Preview Image](./preview.png)
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![MediaPipe](https://img.shields.io/badge/MediaPipe-FF1744?style=for-the-badge&logo=google&logoColor=white)
+![Essentia.js](https://img.shields.io/badge/Essentia.js-FF7043?style=for-the-badge&logo=javascript&logoColor=white)
+
 ## 🚀 Fitur Utama
 - **Hand Slicer**: Iris bola-bola hijau yang jatuh dan hindari bom merah menggunakan jari telunjukmu!
 - **Hand Rhythm**: Game ritme (mirip Osu!) di mana kamu harus menekan lingkaran sesuai ketukan musik.
@@ -47,10 +55,3 @@ Jika muncul error **"Cannot find native binding"** di Windows:
 2. Hapus folder `node_modules` dan `package-lock.json`.
 3. Jalankan `npm install` kembali.
 4. Jika masih berlanjut, sangat disarankan menggunakan [Bun](https://bun.sh/) karena Bun memiliki manajemen library native Windows yang lebih stabil untuk project ini.
-
-## 🧱 Teknologi yang Digunakan
-- **Next.js 16 (Turbopack)**
-- **Tailwind CSS v4** (dengan mesin Oxide)
-- **MediaPipe Hands** (Google AI untuk deteksi tangan)
-- **Essentia.js** (Untuk analisis musik/BPM)
-- **TypeScript**

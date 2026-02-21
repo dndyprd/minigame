@@ -29,7 +29,7 @@ const ListGame: React.FC<ListGameProps> = ({ href, title, description, icon, col
                     <h2 className="text-3xl font-bold mb-2 transition-colors text-(--card-color) group-hover:text-white">
                         {title}
                     </h2>
-                    <p className="text-gray-400">
+                    <p className="text-gray-400 group-hover:text-white">
                         {description}
                     </p>
                 </div>
