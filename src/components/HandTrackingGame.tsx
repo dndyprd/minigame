@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
+import GameStartMenu from "./CardGame";
+import Squares from "./BackgroundGrid";
 import Script from "next/script";
+import Link from "next/link";
 
 // Define minimal types for what we use from global window objects
 declare global {
@@ -532,19 +535,16 @@ const HandTrackingGame: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-[100dvh] bg-neutral-950 flex flex-col items-center justify-center overflow-hidden font-sans">
+    <div className="relative w-full h-[100dvh] bg-neutral-950 overflow-hidden font-sans">
       {/* Background Overlay with Grid */}
-      <div
-        className="absolute inset-0 z-0 opacity-20 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      ></div>
-
-      {/* Ambient Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-cyan-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Squares
+          speed={0.3}
+          squareSize={75}
+          direction="diagonal"
+          borderColor="#111325"
+        />
+      </div>
 
       {/* Scripts */}
       <Script
@@ -575,145 +575,107 @@ const HandTrackingGame: React.FC = () => {
         }}
       />
 
-      {/* HUD: Score and Lives - Glassmorphism */}
-      <div
-        className={`absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 transition-all duration-500`}
-      >
-        {isBuffActive && (
-          <div className="text-yellow-400 font-black text-4xl animate-pulse tracking-widest drop-shadow-[0_0_15px_rgba(234,179,8,0.8)]">
-            BUFF: {buffTimeLeft}s
-          </div>
-        )}
+      {/* Main Content Container */}
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-hidden">
+        {/* Score and Lives */}
         <div
-          className={`flex gap-6 px-8 py-3 backdrop-blur-md border rounded-full shadow-[0_4px_30px_rgba(0,0,0,0.5)] transition-all duration-500 ${isBuffActive ? "bg-yellow-900/40 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.4)]" : "bg-black/40 border-white/10 hover:bg-black/50 hover:border-cyan-500/50"}`}
+          className={`absolute top-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 transition-all duration-500`}
         >
-          <div className="text-white font-bold text-2xl tracking-wider flex items-center gap-2">
-            SCORE{" "}
-            <span
-              className={`font-mono text-3xl drop-shadow-[0_0_10px_rgba(34,211,238,0.8)] ${isBuffActive ? "text-yellow-400" : "text-cyan-400"}`}
-            >
-              {score}
-            </span>
-          </div>
-          <div className="w-px h-8 bg-white/20 self-center"></div>
-          <div className="text-white font-bold text-2xl tracking-wider flex items-center gap-2">
-            LIVES{" "}
-            <span className="text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">
-              {"♥".repeat(lives)}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {gameOver && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md">
-          <div className="p-10 border-2 border-red-500/50 bg-black/60 rounded-3xl text-center shadow-[0_0_50px_rgba(239,68,68,0.4)] relative overflow-hidden group">
-            <div className="absolute inset-0 bg-red-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-            <h1 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-red-500 to-red-900 mb-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] tracking-tighter relative z-10">
-              GAME OVER
-            </h1>
-            <p className="text-4xl text-gray-300 mb-10 font-light tracking-wide relative z-10">
-              Final Score: <span className="text-white font-bold">{score}</span>
-            </p>
-            <button
-              onClick={startGame}
-              className="relative z-10 px-12 py-4 bg-gradient-to-r from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white font-bold rounded-xl text-2xl transition-all shadow-[0_0_20px_rgba(220,38,38,0.5)] hover:shadow-[0_0_40px_rgba(220,38,38,0.8)] hover:-translate-y-1 active:scale-95 border border-red-400/30"
-            >
-              RETRY
-            </button>
-          </div>
-        </div>
-      )}
-
-      {!gameStarted && !gameOver && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl">
-          {areScriptsLoaded ? (
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
-              <div className="relative p-12 bg-black/80 rounded-2xl border border-white/10 text-center max-w-xl shadow-2xl">
-                <h1 className="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 mb-8 drop-shadow-sm tracking-tighter loading-none">
-                  HAND SLICER
-                </h1>
-                <div className="space-y-4 mb-10 text-lg text-gray-300 font-light">
-                  <p>
-                    Use your{" "}
-                    <span className="text-cyan-400 font-bold glow-cyan">
-                      Index Finger
-                    </span>{" "}
-                    to slice the{" "}
-                    <span className="text-green-400 font-bold glow-green">
-                      Green Orbs
-                    </span>
-                    .
-                  </p>
-                  <p>
-                    Avoid the{" "}
-                    <span className="text-red-500 font-bold glow-red">
-                      Red Killers
-                    </span>{" "}
-                    at all costs.
-                  </p>
-                  <p className="text-sm text-gray-500 pt-4 border-t border-gray-800">
-                    Supports Single & Dual Hand Tracking
-                  </p>
-                </div>
-
-                <button
-                  onClick={startGame}
-                  className="group relative inline-flex items-center justify-center px-10 py-5 overflow-hidden font-bold text-white rounded-full bg-cyan-600 shadow-[0_0_20px_rgba(8,145,178,0.5)] transition-all duration-300 hover:bg-cyan-500 hover:shadow-[0_0_40px_rgba(6,182,212,0.7)] hover:scale-105 active:scale-95"
-                >
-                  <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-72 group-hover:h-72 opacity-10"></span>
-                  <span className="relative text-2xl tracking-widest">
-                    START MISSION
-                  </span>
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-6">
-              <div className="relative w-24 h-24">
-                <div className="absolute inset-0 border-4 border-cyan-500/30 rounded-full animate-ping"></div>
-                <div className="absolute inset-0 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-              <p className="text-cyan-400 text-xl font-mono tracking-widest animate-pulse">
-                INITIALIZING SYSTEMS...
-              </p>
+          {isBuffActive && (
+            <div className="text-yellow-400 font-black text-4xl animate-pulse tracking-widest drop-shadow-[0_0_15px_rgba(234,179,8,0.8)]">
+              BUFF: {buffTimeLeft}s
             </div>
           )}
+          <div
+            className={`flex gap-6 px-8 py-3 backdrop-blur-md border rounded-full shadow-[0_4px_30px_rgba(0,0,0,0.5)] transition-all duration-500 ${isBuffActive ? "bg-yellow-900/40 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.4)]" : "bg-black/40 border-white/10 hover:bg-black/50 hover:border-cyan-500/50"}`}
+          >
+            <div className="text-white font-bold text-2xl tracking-wider flex items-center gap-2">
+              SCORE{" "}
+              <span
+                className={`font-mono text-3xl drop-shadow-[0_0_10px_rgba(34,211,238,0.8)] ${isBuffActive ? "text-yellow-400" : "text-cyan-400"}`}
+              >
+                {score}
+              </span>
+            </div>
+            <div className="w-px h-8 bg-white/20 self-center"></div>
+            <div className="text-white font-bold text-2xl tracking-wider flex items-center gap-2">
+              LIVES{" "}
+              <span className="text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">
+                {"♥".repeat(lives)}
+              </span>
+            </div>
+          </div>
         </div>
-      )}
 
-      <video ref={videoRef} className="hidden" playsInline></video>
+        {gameOver && (
+          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md">
+            <div className="p-10 border-2 border-red-500/50 bg-black/60 rounded-3xl text-center shadow-[0_0_50px_rgba(239,68,68,0.4)] relative overflow-hidden group">
+              <div className="absolute inset-0 bg-red-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+              <h1 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-red-500 to-red-900 mb-2 drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] tracking-tighter relative z-10">
+                GAME OVER
+              </h1>
+              <p className="text-4xl text-gray-300 mb-10 font-light tracking-wide relative z-10">
+                Final Score: <span className="text-white font-bold">{score}</span>
+              </p>
+              <div className="flex gap-4">
+                <button
+                  onClick={startGame}
+                  className="relative z-10 px-12 py-4 bg-gradient-to-r from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white font-bold rounded-xl text-2xl transition-all shadow-[0_0_20px_rgba(220,38,38,0.5)] hover:shadow-[0_0_40px_rgba(220,38,38,0.8)] hover:-translate-y-1 active:scale-95 border border-red-400/30"
+                >
+                  RETRY
+                </button>
+                <Link href="/">
+                  <button className="relative z-10 px-12 py-4 bg-gradient-to-r from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white font-bold rounded-xl text-2xl transition-all shadow-[0_0_20px_rgba(220,38,38,0.5)] hover:shadow-[0_0_40px_rgba(220,38,38,0.8)] hover:-translate-y-1 active:scale-95 border border-red-400/30">
+                    BACK HOME
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
-      {/* Cyberpunk Frame around Canvas */}
-      <div className="relative p-1 rounded-3xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-2xl overflow-hidden group">
-        {/* Animated Glow Border */}
-        <div
-          className={`absolute -inset-[2px] rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-gradient-xy ${isBuffActive ? "bg-gradient-to-r from-violet-500 via-yellow-400 to-violet-500" : "bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500"}`}
-        ></div>
+        {!gameStarted && !gameOver && (
+          <GameStartMenu
+            title="HAND SLICER"
+            color="sky-600"
+            colorTo="blue-800"
+            onStart={startGame}
+            isLoading={!areScriptsLoaded}
+            description={
+              <>
+                <p>
+                  Use your Index Finger to slice the <span className="text-green-400 font-semibold">Green Orbs</span>.
+                  <br />
+                  Avoid the {" "}<span className="text-red-500 font-semibold">Red Killers</span>{" "} at all costs.
+                </p>
+                <p className="text-sm text-gray-500 pt-4 border-t border-gray-800 w-full text-center">
+                  Supports Single & Dual Hand Tracking
+                </p>
+              </>
+            }
+          />
+        )}
 
-        <div className="relative rounded-[22px] overflow-hidden bg-black border-4 border-gray-900 shadow-inner">
-          <canvas
-            ref={canvasRef}
-            width={1280}
-            height={720}
-            className="block max-w-[90vw] max-h-[85vh] w-auto h-auto object-contain"
-          ></canvas>
+        <video ref={videoRef} className="hidden" playsInline></video>
 
-          {/* Corner Accents */}
-          <div
-            className={`absolute top-4 left-4 w-16 h-16 border-t-4 border-l-4 rounded-tl-xl pointer-events-none transition-colors duration-500 ${isBuffActive ? "border-yellow-500/50" : "border-cyan-500/50"}`}
-          ></div>
-          <div
-            className={`absolute top-4 right-4 w-16 h-16 border-t-4 border-r-4 rounded-tr-xl pointer-events-none transition-colors duration-500 ${isBuffActive ? "border-violet-500/50" : "border-purple-500/50"}`}
-          ></div>
-          <div
-            className={`absolute bottom-4 left-4 w-16 h-16 border-b-4 border-l-4 rounded-bl-xl pointer-events-none transition-colors duration-500 ${isBuffActive ? "border-yellow-500/50" : "border-cyan-500/50"}`}
-          ></div>
-          <div
-            className={`absolute bottom-4 right-4 w-16 h-16 border-b-4 border-r-4 rounded-br-xl pointer-events-none transition-colors duration-500 ${isBuffActive ? "border-violet-500/50" : "border-purple-500/50"}`}
-          ></div>
-        </div>
+        {/* Cyberpunk Frame around Canvas */}
+        {gameStarted && (
+          <div className="relative p-1 rounded-3xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-2xl overflow-hidden group">
+            {/* Animated Glow Border */}
+            <div
+              className={`absolute -inset-[2px] rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-gradient-xy ${isBuffActive ? "bg-gradient-to-r from-violet-500 via-yellow-400 to-violet-500" : "bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500"}`}
+            ></div>
+
+            <div className="relative rounded-[22px] overflow-hidden bg-black border-4 border-gray-900 shadow-inner">
+              <canvas
+                ref={canvasRef}
+                width={1280}
+                height={720}
+                className="block max-w-[90vw] max-h-[85vh] w-auto h-auto object-contain"
+              ></canvas>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

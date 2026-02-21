@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎮 ARCADE PROTOCOL
 
-## Getting Started
+Website game interaktif berbasis **Hand Tracking** (deteksi pergerakan tangan) menggunakan MediaPipe dan Next.js. Kamu bisa bermain game hanya dengan menggerakkan tangan di depan kamera!
 
-First, run the development server:
+## 🚀 Fitur Utama
+- **Hand Slicer**: Iris bola-bola hijau yang jatuh dan hindari bom merah menggunakan jari telunjukmu!
+- **Hand Rhythm**: Game ritme (mirip Osu!) di mana kamu harus menekan lingkaran sesuai ketukan musik.
+- **Custom Music Analysis**: Di mode Hand Rhythm, kamu bisa upload lagu sendiri (.mp3, .wav, dll) dan sistem akan menganalisis BPM serta beat secara otomatis untuk membuat level game.
+- **Real-time Dual Hand Tracking**: Mendukung deteksi hingga dua tangan sekaligus dengan feedback visual neon yang keren.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠️ Persyaratan Sistem
+Sebelum menjalankan project ini, pastikan perangkatmu memenuhi syarat berikut:
+- **Node.js**: Versi **v20 atau v22 (LTS)** sangat disarankan. 
+  - *Catatan: Node v25 ke atas saat ini mungkin mengalami kendala dengan library native binding pada Windows.*
+- **Kamera/Webcam**: Dibutuhkan untuk mendeteksi gerakan tangan.
+- **Browser Modern**: Google Chrome atau Microsoft Edge disarankan untuk performa deteksi terbaik.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📦 Cara Instalasi & Menjalankan
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone Project**:
+   ```bash
+   git clone https://github.com/agungpriyatno/minigame.git
+   cd minigame
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Instal Library**:
+   Project ini sebenarnya menggunakan **Bun** untuk performa terbaik, tapi kamu juga bisa menggunakan **NPM**:
+   ```bash
+   npm install
+   # ATAU jika menggunakan Bun
+   bun install
+   ```
 
-## Learn More
+3. **Jalankan Mode Pengembangan**:
+   ```bash
+   npm run dev
+   # ATAU
+   bun dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Buka Browser**:
+   Akses `http://localhost:3000` untuk mulai bermain.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ⚠️ Troubleshooting (Jika Error)
+Jika muncul error **"Cannot find native binding"** di Windows:
+1. Pastikan versi Node.js kamu bukan versi ganjil/instabil (gunakan v22 LTS).
+2. Hapus folder `node_modules` dan `package-lock.json`.
+3. Jalankan `npm install` kembali.
+4. Jika masih berlanjut, sangat disarankan menggunakan [Bun](https://bun.sh/) karena Bun memiliki manajemen library native Windows yang lebih stabil untuk project ini.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧱 Teknologi yang Digunakan
+- **Next.js 16 (Turbopack)**
+- **Tailwind CSS v4** (dengan mesin Oxide)
+- **MediaPipe Hands** (Google AI untuk deteksi tangan)
+- **Essentia.js** (Untuk analisis musik/BPM)
+- **TypeScript**

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
+import GameStartMenu from "./CardGame";
+import Squares from "./BackgroundGrid";
 import Script from "next/script";
 import type { Beat, HitCircle, HandCursor, Particle } from "@/types/game";
 import { analyzeAudioFile } from "@/lib/essentiaAnalyzer";
@@ -541,16 +543,16 @@ const HandRhythmGame: React.FC = () => {
   const grade = getGrade(accuracy);
 
   return (
-    <div className="relative w-full min-h-screen bg-neutral-950 flex flex-col items-center justify-center overflow-hidden font-sans p-4">
+    <div className="relative w-full min-h-screen bg-neutral-950 overflow-hidden font-sans">
       {/* Background Grid */}
-      <div
-        className="absolute inset-0 z-0 opacity-20 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Squares
+          speed={0.3}
+          squareSize={75}
+          direction="diagonal"
+          borderColor="#111325"
+        />
+      </div>
 
       {/* Ambient Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-cyan-500/20 blur-[100px] rounded-full pointer-events-none" />
@@ -584,209 +586,176 @@ const HandRhythmGame: React.FC = () => {
         }}
       />
 
-      {/* HUD */}
-      {gameState === "playing" && (
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex gap-6 px-8 py-3 backdrop-blur-md bg-black/40 border border-white/10 rounded-full shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-          <div className="text-white font-bold text-2xl tracking-wider flex items-center gap-2">
-            SCORE
-            <span className="font-mono text-3xl text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]">
-              {score}
-            </span>
+      {/* Main Content Container */}
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-hidden p-4">
+        {/* HUD */}
+        {gameState === "playing" && (
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex gap-6 px-8 py-3 backdrop-blur-md bg-black/40 border border-white/10 rounded-full shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+            <div className="text-white font-bold text-2xl tracking-wider flex items-center gap-2">
+              SCORE
+              <span className="font-mono text-3xl text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]">
+                {score}
+              </span>
+            </div>
+            <div className="w-px h-8 bg-white/20 self-center" />
+            <div className="text-white font-bold text-2xl tracking-wider flex items-center gap-2">
+              COMBO
+              <span className="font-mono text-3xl text-yellow-400 drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]">
+                {combo}x
+              </span>
+            </div>
           </div>
-          <div className="w-px h-8 bg-white/20 self-center" />
-          <div className="text-white font-bold text-2xl tracking-wider flex items-center gap-2">
-            COMBO
-            <span className="font-mono text-3xl text-yellow-400 drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]">
-              {combo}x
-            </span>
-          </div>
-        </div>
-      )}
+        )}
 
-      {/* Main Menu */}
-      {gameState === "menu" && !isAnalyzing && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl">
-          {areScriptsLoaded ? (
-            <div className="relative group max-w-2xl">
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200" />
-              <div className="relative p-12 bg-black/80 rounded-2xl border border-white/10 text-center shadow-2xl">
-                <h1 className="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 mb-8 drop-shadow-sm tracking-tighter">
-                  HAND RHYTHM
-                </h1>
+        {/* Main Menu */}
+        {gameState === "menu" && !isAnalyzing && (
+          <GameStartMenu
+            title="HAND RHYTHM"
+            color="purple-500"
+            colorTo="indigo-800"
+            isLoading={!areScriptsLoaded}
+            onFileUpload={!(audioFile && bpm > 0) ? handleFileUpload : undefined}
+            onStart={audioFile && bpm > 0 ? startGame : undefined}
+            startLabel="START GAME"
+            uploadLabel="UPLOAD MUSIC"
+            description={
+              <>
+                <p>
+                  Use your{" "}
+                  <span className="text-purple-400 font-bold">
+                    index finger
+                  </span>{" "}
+                  to hit the circles at the perfect timing!
+                </p>
+                <p className="text-sm text-gray-500">
+                  Osu! inspired rhythm game with hand tracking
+                </p>
+              </>
+            }
+            footer={audioFile && bpm > 0 && (
+              <div className="mt-4 px-6 py-3 bg-green-900/30 border border-green-500/50 rounded-lg">
+                <p className="text-green-400 font-mono text-sm">
+                  ✓ Audio analyzed: {bpm} BPM •{" "}
+                  {hitCirclesRef.current.length} beats detected
+                </p>
+              </div>
+            )}
+          />
+        )}
 
-                <div className="space-y-4 mb-10 text-lg text-gray-300 font-light">
-                  <p>
-                    Use your{" "}
-                    <span className="text-cyan-400 font-bold">
-                      index finger
-                    </span>{" "}
-                    to hit the circles at the perfect timing!
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Osu! inspired rhythm game with hand tracking
+        {/* Loading / Analysis */}
+        {gameState === "loading" && isAnalyzing && (
+          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center p-4">
+            <div className="relative w-full max-w-md">
+              <div className="group relative">
+
+                <div className="relative bg-black/40 backdrop-blur-md border border-gray-800 rounded-2xl p-12 text-center overflow-hidden">
+                  <h2 className="text-4xl font-black text-white mb-8 tracking-tighter uppercase">
+                    Analyzing Audio
+                  </h2>
+
+                  <div className="relative w-full h-4 bg-white/5 rounded-full border border-white/10 p-1 mb-4 overflow-hidden">
+                    <div
+                      className="h-full bg-linear-to-r from-purple-500 to-indigo-600 rounded-full shadow-[0_0_20px_rgba(147,51,234,0.5)] transition-all duration-300"
+                      style={{ width: `${analysisProgress}%` }}
+                    />
+                  </div>
+
+                  <div className="flex justify-between items-center mb-8">
+                    <span className="text-gray-500 text-xs font-mono uppercase tracking-widest">
+                      Processing Beats
+                    </span>
+                    <span className="text-purple-400 font-black font-mono text-xl">
+                      {analysisProgress}%
+                    </span>
+                  </div>
+
+                  <p className="text-gray-400 text-sm font-light leading-relaxed">
+                    Detecting BPM and beat positions for the mission.
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
 
-                {audioFile && bpm > 0 ? (
-                  <div className="space-y-6">
-                    <div className="px-6 py-3 bg-green-900/30 border border-green-500/50 rounded-lg">
-                      <p className="text-green-400 font-mono">
-                        ✓ Audio analyzed: {bpm} BPM •{" "}
-                        {hitCirclesRef.current.length} beats detected
-                      </p>
+        {/* Results Screen */}
+        {gameState === "results" && (
+          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md">
+            <div className="p-10 border-2 border-cyan-500/50 bg-black/60 rounded-3xl text-center shadow-[0_0_50px_rgba(6,182,212,0.4)] relative overflow-hidden group max-w-2xl">
+              <div className="absolute inset-0 bg-cyan-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <h1 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-cyan-500 to-blue-900 mb-6 drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] tracking-tighter relative z-10">
+                {grade}
+              </h1>
+              <div className="space-y-4 text-2xl text-gray-300 mb-10 relative z-10">
+                <p>
+                  Score: <span className="text-white font-bold">{score}</span>
+                </p>
+                <p>
+                  Accuracy:{" "}
+                  <span className="text-cyan-400 font-bold">{accuracy}%</span>
+                </p>
+                <p>
+                  Max Combo:{" "}
+                  <span className="text-yellow-400 font-bold">{maxCombo}x</span>
+                </p>
+                <div className="grid grid-cols-4 gap-4 mt-6 text-lg">
+                  <div className="p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
+                    <div className="text-yellow-400 font-bold">
+                      {perfectHitsRef.current}
                     </div>
-                    <button
-                      onClick={startGame}
-                      className="group relative inline-flex items-center justify-center px-10 py-5 overflow-hidden font-bold text-white rounded-full bg-cyan-600 shadow-[0_0_20px_rgba(8,145,178,0.5)] transition-all duration-300 hover:bg-cyan-500 hover:shadow-[0_0_40px_rgba(6,182,212,0.7)] hover:scale-105 active:scale-95"
-                    >
-                      <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-72 group-hover:h-72 opacity-10" />
-                      <span className="relative text-2xl tracking-widest">
-                        START GAME
-                      </span>
-                    </button>
+                    <div className="text-xs text-gray-400">PERFECT</div>
                   </div>
-                ) : (
-                  <div className="space-y-6">
-                    <label className="cursor-pointer group relative inline-flex items-center justify-center px-10 py-5 overflow-hidden font-bold text-white rounded-full bg-purple-600 shadow-[0_0_20px_rgba(147,51,234,0.5)] transition-all duration-300 hover:bg-purple-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.7)] hover:scale-105 active:scale-95">
-                      <input
-                        type="file"
-                        accept=".mp3,.m4a,.opus,.wav,.ogg,audio/mpeg,audio/mp4,audio/opus,audio/wav,audio/ogg"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleFileUpload(file);
-                        }}
-                      />
-                      <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-72 group-hover:h-72 opacity-10" />
-                      <span className="relative text-2xl tracking-widest">
-                        UPLOAD MUSIC
-                      </span>
-                    </label>
-                    <p className="text-sm text-gray-500">
-                      Supported: MP3, M4A, Opus, WAV, OGG
-                    </p>
+                  <div className="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded-lg">
+                    <div className="text-cyan-400 font-bold">
+                      {goodHitsRef.current}
+                    </div>
+                    <div className="text-xs text-gray-400">GOOD</div>
                   </div>
-                )}
+                  <div className="p-3 bg-gray-900/20 border border-gray-500/30 rounded-lg">
+                    <div className="text-gray-400 font-bold">
+                      {badHitsRef.current}
+                    </div>
+                    <div className="text-xs text-gray-400">BAD</div>
+                  </div>
+                  <div className="p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
+                    <div className="text-red-400 font-bold">
+                      {missCountRef.current}
+                    </div>
+                    <div className="text-xs text-gray-400">MISS</div>
+                  </div>
+                </div>
               </div>
+              <button
+                onClick={() => setGameState("menu")}
+                className="relative z-10 px-12 py-4 bg-gradient-to-r from-cyan-600 to-blue-800 hover:from-cyan-500 hover:to-blue-700 text-white font-bold rounded-xl text-2xl transition-all shadow-[0_0_20px_rgba(8,145,178,0.5)] hover:shadow-[0_0_40px_rgba(6,182,212,0.8)] hover:-translate-y-1 active:scale-95 border border-cyan-400/30"
+              >
+                BACK TO MENU
+              </button>
             </div>
-          ) : (
-            <div className="flex flex-col items-center gap-6">
-              <div className="relative w-24 h-24">
-                <div className="absolute inset-0 border-4 border-cyan-500/30 rounded-full animate-ping" />
-                <div className="absolute inset-0 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-              </div>
-              <p className="text-cyan-400 text-xl font-mono tracking-widest animate-pulse">
-                INITIALIZING SYSTEMS...
-              </p>
-            </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* Loading / Analysis */}
-      {gameState === "loading" && isAnalyzing && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl">
-          <div className="relative p-12 bg-black/80 rounded-2xl border border-white/10 text-center shadow-2xl max-w-md">
-            <h2 className="text-4xl font-bold text-white mb-6">
-              Analyzing Audio...
-            </h2>
-            <div className="w-full bg-gray-800 rounded-full h-4 mb-4 overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-cyan-400 to-purple-600 transition-all duration-300 rounded-full"
-                style={{ width: `${analysisProgress}%` }}
+        {/* Hidden video element */}
+        <video ref={videoRef} className="hidden" playsInline />
+        {/* Hidden audio element */}
+        <audio ref={audioRef} />
+
+        {/* Game Canvas */}
+        {gameState === "playing" && (
+          <div className="relative p-1 rounded-3xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-2xl overflow-hidden group">
+            <div className="absolute -inset-[2px] rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500" />
+
+            <div className="relative rounded-[22px] overflow-hidden bg-black border-4 border-gray-900 shadow-inner">
+              <canvas
+                ref={canvasRef}
+                width={GAME_CONFIG.CANVAS_WIDTH}
+                height={GAME_CONFIG.CANVAS_HEIGHT}
+                className="block max-w-[90vw] max-h-[85vh] w-auto h-auto object-contain"
               />
             </div>
-            <p className="text-cyan-400 font-mono text-xl">
-              {analysisProgress}%
-            </p>
-            <p className="text-gray-400 text-sm mt-4">
-              Detecting BPM and beat positions...
-            </p>
           </div>
-        </div>
-      )}
-
-      {/* Results Screen */}
-      {gameState === "results" && (
-        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md">
-          <div className="p-10 border-2 border-cyan-500/50 bg-black/60 rounded-3xl text-center shadow-[0_0_50px_rgba(6,182,212,0.4)] relative overflow-hidden group max-w-2xl">
-            <div className="absolute inset-0 bg-cyan-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-            <h1 className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-cyan-500 to-blue-900 mb-6 drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] tracking-tighter relative z-10">
-              {grade}
-            </h1>
-            <div className="space-y-4 text-2xl text-gray-300 mb-10 relative z-10">
-              <p>
-                Score: <span className="text-white font-bold">{score}</span>
-              </p>
-              <p>
-                Accuracy:{" "}
-                <span className="text-cyan-400 font-bold">{accuracy}%</span>
-              </p>
-              <p>
-                Max Combo:{" "}
-                <span className="text-yellow-400 font-bold">{maxCombo}x</span>
-              </p>
-              <div className="grid grid-cols-4 gap-4 mt-6 text-lg">
-                <div className="p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
-                  <div className="text-yellow-400 font-bold">
-                    {perfectHitsRef.current}
-                  </div>
-                  <div className="text-xs text-gray-400">PERFECT</div>
-                </div>
-                <div className="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded-lg">
-                  <div className="text-cyan-400 font-bold">
-                    {goodHitsRef.current}
-                  </div>
-                  <div className="text-xs text-gray-400">GOOD</div>
-                </div>
-                <div className="p-3 bg-gray-900/20 border border-gray-500/30 rounded-lg">
-                  <div className="text-gray-400 font-bold">
-                    {badHitsRef.current}
-                  </div>
-                  <div className="text-xs text-gray-400">BAD</div>
-                </div>
-                <div className="p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
-                  <div className="text-red-400 font-bold">
-                    {missCountRef.current}
-                  </div>
-                  <div className="text-xs text-gray-400">MISS</div>
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={() => setGameState("menu")}
-              className="relative z-10 px-12 py-4 bg-gradient-to-r from-cyan-600 to-blue-800 hover:from-cyan-500 hover:to-blue-700 text-white font-bold rounded-xl text-2xl transition-all shadow-[0_0_20px_rgba(8,145,178,0.5)] hover:shadow-[0_0_40px_rgba(6,182,212,0.8)] hover:-translate-y-1 active:scale-95 border border-cyan-400/30"
-            >
-              BACK TO MENU
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Hidden video element */}
-      <video ref={videoRef} className="hidden" playsInline />
-
-      {/* Hidden audio element */}
-      <audio ref={audioRef} />
-
-      {/* Game Canvas */}
-      <div className="relative p-1 rounded-3xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-2xl overflow-hidden group">
-        <div className="absolute -inset-[2px] rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500" />
-
-        <div className="relative rounded-[22px] overflow-hidden bg-black border-4 border-gray-900 shadow-inner">
-          <canvas
-            ref={canvasRef}
-            width={GAME_CONFIG.CANVAS_WIDTH}
-            height={GAME_CONFIG.CANVAS_HEIGHT}
-            className="block max-w-[90vw] max-h-[85vh] w-auto h-auto object-contain"
-          />
-
-          {/* Corner Accents */}
-          <div className="absolute top-4 left-4 w-16 h-16 border-t-4 border-l-4 border-cyan-500/50 rounded-tl-xl pointer-events-none" />
-          <div className="absolute top-4 right-4 w-16 h-16 border-t-4 border-r-4 border-purple-500/50 rounded-tr-xl pointer-events-none" />
-          <div className="absolute bottom-4 left-4 w-16 h-16 border-b-4 border-l-4 border-cyan-500/50 rounded-bl-xl pointer-events-none" />
-          <div className="absolute bottom-4 right-4 w-16 h-16 border-b-4 border-r-4 border-purple-500/50 rounded-br-xl pointer-events-none" />
-        </div>
+        )}
       </div>
     </div>
   );
